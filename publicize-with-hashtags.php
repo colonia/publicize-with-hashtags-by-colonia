@@ -57,19 +57,33 @@ function publicize_with_hashtags() {
     if (!empty($mess) && !empty($mess_max_length) && $mess_max_length <= (strlen($mess))) return;
     // Get the post tags array
     $ta = get_the_tags($p->ID);	
+    $ca = get_the_category($p->ID);	
     // Performance-wise tag check: do nothing if we don't (yet) have tags to process.
-    if (empty($ta)) return;
+    if (empty($ta) && empty($ca)) return;
 
     // From now on, we mean business. Let's start by initializing the social message (if needed).
     if (empty($mess)) $mess = '';
     // Create list of tags with hashtags in front of them until threshold is reached
-    foreach ($ta as $t) {
+    if (!empty($ta)) {
+        foreach ($ta as $t) {
         // Create the hashtag, stripping spaces if needed.
         $ht = '#' . (($strip_spaces) ? str_replace(' ', '', $t->name) : $t->name);
         // only process newly-added hashtags, skipping duplicate ones
-        if (stripos($mess,$ht) === false) {	
-            if (!empty($mess_max_length) && $mess_max_length <= (strlen($mess) + strlen($ht))) break;
-            $mess .= ' '.$ht;
+            if (stripos($mess,$ht) === false) {	
+                if (!empty($mess_max_length) && $mess_max_length <= (strlen($mess) + strlen($ht))) break;
+                $mess .= ' '.$ht;
+            }
+        }
+    }
+    if (!empty($ca)) {
+        foreach ($ca as $c) {
+        // Create the hashtag, stripping spaces if needed.
+        $ht = '#' . (($strip_spaces) ? str_replace(' ', '', $c->name) : $c->name);
+        // only process newly-added hashtags, skipping duplicate ones
+            if (stripos($mess,$ht) === false) {	
+                if (!empty($mess_max_length) && $mess_max_length <= (strlen($mess) + strlen($ht))) break;
+                $mess .= ' '.$ht;
+            }
         }
     }
     // Update the new social message
