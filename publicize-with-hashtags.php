@@ -92,6 +92,7 @@ function publicize_with_hashtags() {
         }
     $mess = substr ( $mess , 0, strlen($htags));
     }
+    $mess .= ' '.$htags;
     // Update the new social message
     update_post_meta($p->ID, $meta, $mess);
 }
